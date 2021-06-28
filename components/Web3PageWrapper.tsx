@@ -1,0 +1,11 @@
+// DYNAMIC ACCOUNT LOADING POSSIBLE SOLUTIONS
+// STORE THE ADDRESS IN LOCALSTORAGE
+// STORE THE ADDRESS INSIDE A JWT
+// ATM WE'LL USE A BASIC INPUT FORM
+
+// export default function Web3PageWrapper{
+
+//   return ()
+// }
+
+export {};
