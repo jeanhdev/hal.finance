@@ -16,4 +16,4 @@ At alpha stage, you'll need a [Covalent](https://www.covalenthq.com/) API key in
 
 Then you can run the app in `dev` mode with the following
 
-3. `next` or `yarn dev` if you don't have `Next.js` CLI installed
+3. `next` or `yarn dev` if you don't have Next.js CLI installed
