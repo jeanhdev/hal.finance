@@ -8,7 +8,7 @@ import { injectedConnector } from "./_app";
 export default function Home({}) {
   // active will be dynamically set via web3 address fetching
   const active = true;
-  const address = "0xB1c0d16894e6D3B4C6eE0d40f28Bd1338e996AbD";
+  const address = "YOUR_ETH_ACCOUNT_ADDRESS";
   const { data, error } = useSWR(`/api/v1/eth?address=${address}`, apiFetcher);
 
   return (

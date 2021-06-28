@@ -3,7 +3,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   const { address } = req.query;
-  const chainId = 137;
+  const chainId = 1;
   // We'll need to do error handling on each requests, and make multiple axios promises at once instead of 3 calls
   const daily_portfolio = await axios.get(
     `https://api.covalenthq.com/v1/${chainId}/address/${address}/portfolio_v2/?key=${process.env.COVALENT_API_KEY}`
