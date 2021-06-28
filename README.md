@@ -8,6 +8,7 @@ At alpha stage, you'll need a [Covalent](https://www.covalenthq.com/) API key in
 2. Insert `COVALENT_API_KEY=YOUR_API_KEY`
 
 Then you'll need to run the app at `dev` level with
+
 3. `next` or `yarn dev` if you don't have `Next.js` CLI installed
 
 Hal is an app built w/ Next.js dedicated to help ethereum users gain an analytics insights onto their portfolio.
