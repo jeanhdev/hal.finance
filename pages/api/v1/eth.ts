@@ -3,10 +3,15 @@ import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   const { address } = req.query;
-  const chainId = 1;
+  let chain_id;
+  if (req.query.chain_id) {
+    chain_id = req.query.chain_id;
+  } else {
+    chain_id = 1;
+  }
   // We'll need to do error handling on each requests, and make multiple axios promises at once instead of 3 calls
   const daily_portfolio = await axios.get(
-    `https://api.covalenthq.com/v1/${chainId}/address/${address}/portfolio_v2/?key=${
+    `https://api.covalenthq.com/v1/${chain_id}/address/${address}/portfolio_v2/?key=${
       process.env.COVALENT_API_KEY
     }&quote-currency=${`USD`}`
   );
@@ -35,11 +40,11 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   const current_holdings = await axios.get(
-    `https://api.covalenthq.com/v1/${chainId}/address/${address}/balances_v2/?key=${process.env.COVALENT_API_KEY}`
+    `https://api.covalenthq.com/v1/${chain_id}/address/${address}/balances_v2/?key=${process.env.COVALENT_API_KEY}`
   );
 
   const latest_transactions = await axios.get(
-    `https://api.covalenthq.com/v1/${chainId}/address/${address}/transactions_v2/?key=${process.env.COVALENT_API_KEY}&quote-currency=USD`
+    `https://api.covalenthq.com/v1/${chain_id}/address/${address}/transactions_v2/?key=${process.env.COVALENT_API_KEY}&quote-currency=USD`
   );
 
   const data = {
