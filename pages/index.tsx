@@ -96,26 +96,28 @@ const Portfolio = ({ portfolioData }) => {
           {portfolioValue.change > 0 ? (
             <div className='flex flex-row items-center text-green-500'>
               <ArrowUpIcon className='h-6 w-6 ' />
-              <h3 className='font-semibold text-xl'>{numeral(portfolioValue.change).format("(0.00)")} %</h3>
+              <h3 className='font-semibold text-xl'>{numeral(portfolioValue.change).format("0.00")} %</h3>
             </div>
           ) : (
             <div className='flex flex-row items-center text-red-500'>
               <ArrowDownIcon className='h-5 w-5' />
-              <h3 className='font-semibold text-xl'>{numeral(portfolioValue.change).format("(0.00)")} %</h3>
+              <h3 className='font-semibold text-xl'>{numeral(portfolioValue.change).format("0.00")} %</h3>
             </div>
           )}
-          <h3 className='font-semibold text-xl'>{numeral(portfolioValue).format("$(0.00 a)")}</h3>
+          <h3 className='font-semibold text-xl'>{numeral(portfolioValue.close).format("$(0.00 a)")}</h3>
         </div>
       </div>
       <div style={{ height: "30vh", width: "100%" }}>
         <ResponsiveContainer width='100%' height='100%'>
-          <LineChart data={portfolioData}>
+          <LineChart data={portfolioData} onMouseLeave={() => setPortfolioValue(todayPortfolioValue)}>
             <Line type='monotone' dataKey='close' stroke='#10B981' dot={null} />
             <XAxis dataKey='date' tickFormatter={(date) => `${moment(date).format("L")}`} interval='preserveEnd' />
             <YAxis dataKey='close' tickFormatter={(close) => `$${numeral(close).format("(0 a)")}`} />
             <Tooltip
               cursor={false}
-              content={<CustomTooltip portfolioValue={portfolioValue} setPortfolioValue={setPortfolioValue} />}
+              content={
+                <CustomTooltip portfolioData={portfolioData} onChange={(value: any) => setPortfolioValue(value)} />
+              }
             />
             {/* <CartesianGrid /> */}
           </LineChart>
@@ -125,21 +127,23 @@ const Portfolio = ({ portfolioData }) => {
   );
 };
 
-const CustomTooltip = ({ active, payload, portfolioValue, setPortfolioValue }: any) => {
-  if (active) {
-    const today = payload[0].value;
-    setPortfolioValue({
-      ...portfolioValue,
-      close: today.close,
-      // change: computeChange()
-    });
-    return (
-      // <div className='p-3 bg-blue-400'>
-      //   <h4>{value}</h4>
-      // </div>
-      null
-    );
-  }
+const CustomTooltip = ({ active, payload, portfolioData, onChange }: any) => {
+  useEffect(() => {
+    if (active) {
+      const today = payload[0].payload;
+
+      const todayPosition = portfolioData.indexOf(today);
+      if (todayPosition !== 0) {
+        const yesterdayPosition = todayPosition - 1;
+        const result = {
+          close: today.close,
+          change: computeChange(portfolioData[todayPosition].close, portfolioData[yesterdayPosition].close),
+        };
+        onChange(result);
+      }
+    }
+  }, [payload]);
+
   return null;
 };
 
