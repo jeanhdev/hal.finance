@@ -86,26 +86,7 @@ const Portfolio = ({ portfolioData }) => {
     close: portfolioData[portfolioData.length - 1].close,
     change: computeChange(portfolioData[portfolioData.length - 1].close, portfolioData[portfolioData.length - 2].close),
   };
-  const [today, setToday] = useState(portfolioData[portfolioData.length - 1]);
   const [portfolioValue, setPortfolioValue] = useState(todayPortfolioValue);
-
-  useEffect(() => {}, [today]);
-
-  const handlePortfolioValue = (dayPortfolio: any) => {
-    // Value of today
-    const todayDate = dayPortfolio.date;
-    const todayValue = dayPortfolio.close;
-    const todayPosition = portfolioData.filter((day) => day.date === todayDate)[0];
-    // Find yesterday
-    const yesterdayPosition = portfolioData.indexOf(todayPosition) - 1;
-    const yesterdayValue = portfolioData[yesterdayPosition].close;
-    // Compute the change
-    const change = computeChange(todayValue, yesterdayValue);
-    setPortfolioValue({
-      close: todayValue,
-      change: change,
-    });
-  };
 
   return (
     <div className='flex flex-col gap-6  bg-white p-8 rounded-lg shadow-md'>
@@ -134,7 +115,7 @@ const Portfolio = ({ portfolioData }) => {
             <YAxis dataKey='close' tickFormatter={(close) => `$${numeral(close).format("(0 a)")}`} />
             <Tooltip
               cursor={false}
-              content={<CustomTooltip handlePortfolioValue={(data) => handlePortfolioValue(data)} />}
+              content={<CustomTooltip portfolioValue={portfolioValue} setPortfolioValue={setPortfolioValue} />}
             />
             {/* <CartesianGrid /> */}
           </LineChart>
@@ -144,9 +125,14 @@ const Portfolio = ({ portfolioData }) => {
   );
 };
 
-const CustomTooltip = ({ active, payload, handlePortfolioValue }: any) => {
+const CustomTooltip = ({ active, payload, portfolioValue, setPortfolioValue }: any) => {
   if (active) {
-    handlePortfolioValue(payload[0].payload);
+    const today = payload[0].value;
+    setPortfolioValue({
+      ...portfolioValue,
+      close: today.close,
+      // change: computeChange()
+    });
     return (
       // <div className='p-3 bg-blue-400'>
       //   <h4>{value}</h4>
