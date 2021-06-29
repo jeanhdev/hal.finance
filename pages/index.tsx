@@ -191,9 +191,7 @@ const Holdings = ({ currentHoldingsData }) => {
                 </tfoot>
               </table>
             </div>
-            <div id='holdings-pie w-full'>
-              <h3>pie chart</h3>
-            </div>
+            <div id='holdings-pie w-full'>{/* <h3>pie chart</h3> */}</div>
           </div>
         </div>
       </div>
