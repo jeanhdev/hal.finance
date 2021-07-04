@@ -1,9 +1,35 @@
-export default function TradesHistory({}) {
+import axios from "axios";
+import React, { useContext, useEffect, useState } from "react";
+import useSWR from "swr";
+import { AssetsContext } from "../context/AssetsContext";
+
+const fetcher = (url) => fetch(url).then((r) => r.json());
+
+export default function News({}) {
+  const [assetsState, setAssetsState] = useContext(AssetsContext);
+  const { allHoldings } = assetsState;
+  const [newsData, setNewsData] = useState([]);
+
+  if (!assetsState.allHoldings.length) {
+    return null;
+  }
+
+  const fetchNews = () => {
+    const nonEmptyTokens = allHoldings.filter((holding) => holding.balance !== "0");
+    axios.post(`/api/v1/news`, { allHoldings: nonEmptyTokens }).then((res) => {
+      setNewsData(res.data);
+    });
+  };
+
+  useEffect(() => {
+    fetchNews();
+  }, []);
+
   return (
     <div className='container mx-auto my-3'>
       <div className='flex flex-row justify-between items-center mb-8'>
         <div className='flex flex-col gap-6 bg-white p-8 rounded-lg shadow-md'>
-          <h2 className='text-2xl font-medium leading-6 text-gray-900'>Current holdings</h2>
+          <h2 className='text-2xl font-medium leading-6 text-gray-900'>News</h2>
           <div style={{ minHeight: "20vh" }}>
             <div className='grid grid-flow-col grid-cols-1'>
               <div id='holdings-table w-full'>
@@ -11,29 +37,18 @@ export default function TradesHistory({}) {
                   <thead>
                     <tr className='text-left'>
                       <th align='left'>Token</th>
-                      <th align='left'>Asset Class</th>
-                      <th align='left'>Weight</th>
-                      <th align='left'>Change (24hrs)</th>
-                      <th align='left'>Value</th>
-                      <th align='left'>Exposure</th>
+                      <th align='left'>Title</th>
+                      <th align='left'>Sentiment</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {/* {tokens.map((token: any) => (
-                    <tr className='border-gray-700 border'>
-                      <td>
-                        {token.contract_name} ({token.contract_ticker_symbol})
-                      </td>
-
-                      <td align='right'></td>
-                      <td align='right'>{numeral(getTokenWeight(token.quote)).format("0.00 %")}</td>
-
-                      <td align='right'></td>
-                      <td align='right'>{numeral(token.quote).format("$ (0.00 a)")}</td>
-
-                      <td align='right'></td>
-                    </tr>
-                  ))} */}
+                    {newsData.map((news) => (
+                      <tr className='border-gray-700 border'>
+                        <td>{news.token}</td>
+                        <td align='left'>{news.title}</td>
+                        <td align='left'>{news.binaryResult}</td>
+                      </tr>
+                    ))}
                   </tbody>
                   <tfoot className='border-t-2 border-gray-500'>
                     {/* <tr>

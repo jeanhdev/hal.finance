@@ -13,6 +13,7 @@ import {
   Cell,
   LineChart,
 } from "recharts";
+import findAllAssets from "../utils/allAssets";
 import { TrendingUpIcon, TrendingDownIcon, ArrowUpIcon, ArrowDownIcon } from "@heroicons/react/outline";
 import numeral from "numeral";
 import moment from "moment";
@@ -27,6 +28,7 @@ export default function Assets({}) {
   const [web3State, setWeb3State] = useContext(Web3Context);
 
   const chainIdRef = useRef();
+
   const [portfolioData, setPorfolioData] = useState([]);
   const [currentHoldingsData, setCurrentHoldingsData] = useState([]);
 
@@ -35,28 +37,20 @@ export default function Assets({}) {
   const fetchInvestorData = (customChaindId?: any) => {
     setAppLoading(true);
     if (customChaindId) {
-      axios.get(`/api/v1/assets?address=${web3State.account}&chain_id=${customChaindId}`).then((res) => {
-        const resData = res.data;
-        setPorfolioData(resData.daily_portfolio);
-
-        setCurrentHoldingsData(resData.current_holdings);
-        // if (!resData.error) {
-        //   const newAssets = {
-        //     chain_id: customChaindId || 1,
-        //     portfolioData: resData.daily_portfolio,
-        //     currentHoldingsData: resData.current_holdings,
-        //   };
-        //   setAssetsState({ ...assetsState, newAssets });
-        // }
-        setAppLoading(false);
-      });
+      const chainData = assetsState.rawData.filter((chain) => chain.chainId === customChaindId)[0];
+      setCurrentHoldingsData(chainData.data.current_holdings);
+      setPorfolioData(chainData.data.daily_portfolio);
+      setAppLoading(false);
     } else {
       axios.get(`/api/v1/assets?address=${web3State.account}`).then((res) => {
         const resData = res.data;
-
-        setPorfolioData(resData.daily_portfolio);
-
-        setCurrentHoldingsData(resData.current_holdings);
+        // const allAssets = findAllAssets(resData);
+        const allHoldings = findAllAssets(resData);
+        setAssetsState({ rawData: resData, allHoldings: allHoldings });
+        const chainData = resData.filter((chain) => chain.chainId === "1")[0];
+        const { current_holdings, daily_portfolio } = chainData.data;
+        setCurrentHoldingsData(current_holdings);
+        setPorfolioData(daily_portfolio);
         setAppLoading(false);
       });
     }
@@ -79,6 +73,7 @@ export default function Assets({}) {
         <h4 className='font-bold text-2xl w-8/12'>Choose your Network</h4>
         <select
           id='chain-id-select'
+          // defaultValue={1}
           className='shadow appearance-none w-4/12 border rounded px-5 py-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
           onChange={() => handleNetworkChange()}
           ref={chainIdRef}
@@ -109,7 +104,12 @@ const Portfolio = ({ portfolioData }) => {
     close: portfolioData[portfolioData.length - 1].close,
     change: computeChange(portfolioData[portfolioData.length - 1].close, portfolioData[portfolioData.length - 2].close),
   };
+
   const [portfolioValue, setPortfolioValue] = useState(todayPortfolioValue);
+
+  useEffect(() => {
+    setPortfolioValue(todayPortfolioValue);
+  }, [portfolioData]);
 
   return (
     <div className='flex flex-col gap-6  bg-white p-8 rounded-lg shadow-md'>

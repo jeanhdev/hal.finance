@@ -56,8 +56,8 @@ const Navbar: React.FC<NavbarProps> = ({}) => {
           <Link href='/assets'>
             <a className='underline'>Assets</a>
           </Link>
-          <Link href='/liquidity'>
-            <a className='underline'>Liquidity</a>
+          <Link href='/news'>
+            <a className='underline'>News</a>
           </Link>
         </div>
         {!loading && (
