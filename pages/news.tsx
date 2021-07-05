@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useContext, useEffect, useState } from "react";
 import useSWR from "swr";
 import { AssetsContext } from "../context/AssetsContext";
+import assets from "./api/v1/assets";
 
 const fetcher = (url) => fetch(url).then((r) => r.json());
 
@@ -9,6 +10,10 @@ export default function News({}) {
   const [assetsState, setAssetsState] = useContext(AssetsContext);
   const { allHoldings } = assetsState;
   const [newsData, setNewsData] = useState([]);
+
+  if (assetsState.allHoldings === undefined) {
+    return null;
+  }
 
   if (!assetsState.allHoldings.length) {
     return null;
